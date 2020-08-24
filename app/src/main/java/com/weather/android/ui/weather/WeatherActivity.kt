@@ -1,141 +1,128 @@
 package com.weather.android.ui.weather
 
-import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.WindowInsetsController
-import android.view.WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager2.widget.ViewPager2
+import com.example.activitytest.BaseActivity
 import com.weather.android.R
-import com.weather.android.logic.model.Weather
-import com.weather.android.logic.model.getSky
+import com.weather.android.WeatherApplication
+import com.weather.android.logic.model.ChoosePlaceResponse
+import com.weather.android.ui.city.CityManageActivity
+import com.weather.android.util.SatusBarUtil
 import kotlinx.android.synthetic.main.activity_weather.*
-import kotlinx.android.synthetic.main.forecast.*
-import kotlinx.android.synthetic.main.life_index.*
-import kotlinx.android.synthetic.main.now.*
-import java.text.SimpleDateFormat
-import java.util.*
+import net.lucode.hackware.magicindicator.MagicIndicator
+import net.lucode.hackware.magicindicator.ViewPagerHelper
 
-class WeatherActivity : AppCompatActivity() {
+class WeatherActivity : BaseActivity() {
 
     val viewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
+
+    lateinit var adapter:WeatherFragmentAdapter
+
+    val choosePlaceList:MutableList<ChoosePlaceResponse> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //实现沉浸模式
-        val decorView = window.decorView
-        decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        window.statusBarColor = Color.TRANSPARENT
-
         setContentView(R.layout.activity_weather)
+
+        SatusBarUtil.setImmersion(window)
+        SatusBarUtil.setStatusTextColor(false,window,Color.TRANSPARENT)
+
 
         if (viewModel.locationLng.isEmpty()){
             viewModel.locationLng = intent.getStringExtra("location_lng") ?: ""
+            //viewModel.locationLng = lng
         }
         if (viewModel.locationLat.isEmpty()){
             viewModel.locationLat = intent.getStringExtra("location_lat") ?: ""
+            //viewModel.locationLat = lat
         }
         if (viewModel.placeName.isEmpty()){
             viewModel.placeName = intent.getStringExtra("place_name") ?: ""
+            //viewModel.placeName = place
         }
 
-        viewModel.weatherLivedata.observe(this, Observer {result ->
-            val weather = result.getOrNull()
-            if (weather!=null){
-                showWeatherInfo(weather)
-            }else{
-                Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
-                result.exceptionOrNull()?.printStackTrace()
-            }
-            swipeRefresh.isRefreshing = false
-        })
-
-        swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
-        refreshWeather()
-        swipeRefresh.setOnRefreshListener {
-            refreshWeather()
-        }
-
-        navBtn.setOnClickListener {
-            drawLayout.openDrawer(GravityCompat.START)
-        }
-
-        drawLayout.addDrawerListener(object : DrawerLayout.DrawerListener{
-            override fun onDrawerStateChanged(newState: Int) {
-
-            }
-
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-
-            }
-
-            override fun onDrawerOpened(drawerView: View) {
-
-            }
-
-            override fun onDrawerClosed(drawerView: View) {
-                //隐藏输入法
-                val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                manager.hideSoftInputFromWindow(drawerView.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
-            }
-        })
-    }
-
-    private fun showWeatherInfo(weather: Weather) {
         placeName.text = viewModel.placeName
-        val realtime = weather.realtime
-        val daily = weather.daily
 
-        //now布局
-        val currentTempText = "${realtime.temperature.toInt()} ℃"
-        currentTemp.text = currentTempText
-        currentSky.text = getSky(realtime.skycon).info
-        val currentPM25Text = "空气指数 ${realtime.airQuality.aqi.chn.toInt()}"
-        currentAQI.text = currentPM25Text
-        nowLayout.setBackgroundResource(getSky(realtime.skycon).bg)
-        // forecast布局
-        forecastLayout.removeAllViews()
-        val days = daily.skycon.size
-        for (i in 0 until days) {
-            val skycon = daily.skycon[i]
-            val temperature = daily.temperature[i]
-            val view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false)
-            val dateInfo = view.findViewById(R.id.dateInfo) as TextView
-            val skyIcon = view.findViewById(R.id.skyIcon) as ImageView
-            val skyInfo = view.findViewById(R.id.skyInfo) as TextView
-            val temperatureInfo = view.findViewById(R.id.temperatureInfo) as TextView
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            dateInfo.text = simpleDateFormat.format(skycon.date)
-            val sky = getSky(skycon.value)
-            skyIcon.setImageResource(sky.icon)
-            skyInfo.text = sky.info
-            val tempText = "${temperature.min.toInt()} ~ ${temperature.max.toInt()} ℃"
-            temperatureInfo.text = tempText
-            forecastLayout.addView(view)
+        viewModel.queryAllChoosePlace()
+
+        viewModel.choosePlaceLiveData.observe(this, Observer {response ->
+            choosePlaceList.clear()
+            if (!WeatherApplication.isFirstBootSaved()) {
+                Log.d("WeatherActivityResponse","test")
+                choosePlaceList.add(ChoosePlaceResponse(1,viewModel.placeName,viewModel.locationLng,viewModel.locationLat))
+            }else{
+                response.let {
+                    for (chooosePlaceData in response){
+                        Log.d("choosePlaceData","${chooosePlaceData.id}+${chooosePlaceData.toString()}")
+
+                        if(chooosePlaceData.id.toString() == "1"){
+                            choosePlaceList.add(ChoosePlaceResponse(1,viewModel.placeName,viewModel.locationLng,viewModel.locationLat))
+                        }else{
+                            choosePlaceList.add(ChoosePlaceResponse(chooosePlaceData.id,chooosePlaceData.name,chooosePlaceData.lng,chooosePlaceData.lat))
+                        }
+                    }
+
+                }
+            }
+            Log.d("choosePlaceList",choosePlaceList.size.toString())
+            adapter = WeatherFragmentAdapter(choosePlaceList,this)
+            viewPage2.adapter = adapter
+
+        })
+
+        addBtn.setOnClickListener {
+            val intent = Intent(this,CityManageActivity::class.java)
+            startActivityForResult(intent,1)
         }
-        // 填充life_index.xml布局中的数据
-        val lifeIndex = daily.lifeIndex
-        coldRiskText.text = lifeIndex.coldRisk[0].desc
-        dressingText.text = lifeIndex.dressing[0].desc
-        ultravioletText.text = lifeIndex.ultraviolet[0].desc
-        carWashingText.text = lifeIndex.carWashing[0].desc
-        weatherLayout.visibility = View.VISIBLE
+
+        viewPage2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                Log.e("WeatherFragment", "onPageScrollStateChanged: $state");
+                //magicIndicator.onPageScrollStateChanged(state)
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                Log.e("WeatherFragment",
+                    "onPageScrolled: $position--->$positionOffset--->$positionOffsetPixels"
+                );
+                //magicIndicator.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                //magicIndicator.onPageSelected(position)
+                placeName.text = choosePlaceList[position].name
+            }
+        })
+
     }
 
-    fun refreshWeather(){
-        viewModel.refreshWeather(viewModel.locationLng,viewModel.locationLat)
-        swipeRefresh.isRefreshing = true
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        viewModel.queryAllChoosePlace()
+        when(requestCode){
+            1 -> if (resultCode == Activity.RESULT_OK){
+                val id = data?.getIntExtra("id",0)
+                if (id != null) {
+                    viewPage2.setCurrentItem(id,false)
+                }
+            }
+        }
     }
+
 }

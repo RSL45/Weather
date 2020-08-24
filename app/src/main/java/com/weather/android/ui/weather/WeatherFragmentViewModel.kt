@@ -8,42 +8,24 @@ import com.weather.android.logic.ApiRepository
 import com.weather.android.logic.ChoosePlaceRepository
 import com.weather.android.logic.model.ChoosePlaceData
 import com.weather.android.logic.model.Location
-import com.weather.android.logic.model.WeatherResponse
 import kotlinx.coroutines.launch
 
-class WeatherViewModel : ViewModel() {
+class WeatherFragmentViewModel : ViewModel() {
+
+
+    private val locationLiveData = MutableLiveData<Location>()
 
     var locationLng = ""
     var locationLat = ""
     var placeName = ""
+    var id = ""
 
-    val choosePlaceLiveData = MutableLiveData<MutableList<ChoosePlaceData>>()
-
-    fun queryAllChoosePlace(){
-        viewModelScope.launch {
-            choosePlaceLiveData.value = ChoosePlaceRepository.queryAllChoosePlace()
-        }
-    }
-
-    /*fun refreshWeather(lng:String,lat:String){
-        locationLiveData.value = Location(lng,lat)
-    }*/
-
-    private val locationLiveData = MutableLiveData<Location>()
-
-    val weatherLivedata = Transformations.switchMap(locationLiveData){location ->
+    val weatherLivedata = Transformations.switchMap(locationLiveData){ location ->
         ApiRepository.refreshCityWeather(location.lng,location.lat)
     }
 
-    fun loadWeather(lng:String,lat:String){
+    fun refreshWeather(lng:String,lat:String){
         locationLiveData.value = Location(lng,lat)
-    }
-
-
-    fun loadAllChoosePlaceWeather(list: MutableList<ChoosePlaceData>){
-        for (i in list){
-            locationLiveData.value = Location(i.lng,i.lat)
-        }
     }
 
     fun insertChoosePlace(choosePlaceData: ChoosePlaceData){

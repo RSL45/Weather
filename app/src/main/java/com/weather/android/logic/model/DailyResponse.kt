@@ -11,11 +11,17 @@ data class DailyResponse(val status:String,val result:Result){
     /*temperature：温度
     * skycon：主要天气现象
     * lifeIndex：生活指数*/
-    data class Daily(val temperature: List<Temperature>, val skycon:List<Skycon>,@SerializedName("life_index") val lifeIndex:LifeIndex)
+    data class Daily(val temperature: List<Temperature>, val skycon:List<Skycon>,@SerializedName("air_quality") val airQuality: AirQuality,@SerializedName("life_index") val lifeIndex:LifeIndex)
 
     data class Temperature(val max:Float,val min:Float)
 
     data class Skycon(val value:String,val date:Date)
+
+    data class AirQuality(val aqi:List<AQI>)
+
+    data class AQI(val max: Max)
+
+    data class Max(val chn:Float)
 
     /*coldRisk：感冒指数
     * carWashing：洗车指数

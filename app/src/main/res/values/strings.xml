@@ -2,4 +2,9 @@
     <string name="app_name">Weather</string>
     <string name="place_search_edit_hint">请输入地址</string>
     <string name="place_search_failure_toast">未能查询到任何地点</string>
+    <string name="title">温馨提示</string>
+    <string name="locate_city">定位城市不允许删除</string>
+    <string name="delete_city">是否删除当前城市？</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
 </resources>
