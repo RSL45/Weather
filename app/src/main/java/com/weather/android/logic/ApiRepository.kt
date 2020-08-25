@@ -1,16 +1,8 @@
 package com.weather.android.logic
 
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.liveData
-import com.weather.android.logic.dao.PlaceDao
-import com.weather.android.logic.model.Place
-import com.weather.android.logic.model.Weather
 import com.weather.android.logic.network.WeatherNetwork
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.lang.RuntimeException
 import kotlin.coroutines.CoroutineContext

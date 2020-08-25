@@ -1,6 +1,5 @@
 package com.weather.android.ui.place
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.weather.android.R
 import com.weather.android.logic.model.Place
-import com.weather.android.ui.city.CityAdapter
-import com.weather.android.ui.weather.WeatherActivity
 
 class SearchPlaceAdapter (private val activity: SearchPlaceActivity ,private val placeList: ArrayList<Place>) : RecyclerView.Adapter<SearchPlaceAdapter.ViewHolder>(){
 

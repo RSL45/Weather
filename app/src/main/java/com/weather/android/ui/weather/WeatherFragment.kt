@@ -58,10 +58,6 @@ class WeatherFragment :Fragment() {
             viewModel.placeName = arguments!!.get("placeName").toString()
             viewModel.locationLng = arguments!!.getString("lng").toString()
             viewModel.locationLat = arguments!!.getString("lat").toString()
-            Log.d(
-                "WeatherFragment",
-                "${viewModel.id},${viewModel.placeName},${viewModel.locationLng},${viewModel.locationLat}"
-            )
         }
 
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
@@ -71,7 +67,6 @@ class WeatherFragment :Fragment() {
         }
 
         viewModel.weatherLivedata.observe(viewLifecycleOwner, Observer { result ->
-            Log.d("WeatherFragmentResult", result.toString())
             val weatherResponse = result.getOrNull()
             val weather = weatherResponse?.result
             if (weather != null) {
@@ -87,11 +82,9 @@ class WeatherFragment :Fragment() {
                 )
                 if (viewModel.id == "1") {
                     if (!WeatherApplication.isFirstBootSaved()) {
-                        Log.d("WeatherFragmentFirst", "true")
                         viewModel.insertChoosePlace(choosePlaceData)
                         WeatherApplication.saveFirstBoot()
                     } else {
-                        Log.d("WeatherFragmentLocateUpdate",weather.realtime.temperature.toInt().toString())
                         viewModel.updateLocatePlace(
                             viewModel.placeName,
                             viewModel.locationLng,
@@ -104,7 +97,6 @@ class WeatherFragment :Fragment() {
                         )
                     }
                 } else {
-                    Log.d("WeatherFragmentUpdate",weather.realtime.temperature.toInt().toString())
                     viewModel.updateChoosePlace(
                         viewModel.placeName,
                         weather.realtime.skycon,
@@ -126,7 +118,6 @@ class WeatherFragment :Fragment() {
     }
 
     private fun showWeatherInfo(weather: WeatherResponse.Result) {
-        Log.d("WeatherFragmentWeather",weather.toString())
         val realtime = weather.realtime
         val daily = weather.daily
 

@@ -30,10 +30,6 @@ class SearchPlaceActivity : BaseActivity(),SearchPlaceAdapter.OnClickItemListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_place)
 
-        SatusBarUtil.setImmersion(window)
-
-        SatusBarUtil.setStatusTextColor(true,window, Color.TRANSPARENT)
-
         //配置RecyclerView
         val layoutManager = LinearLayoutManager(this)
         searchRv.layoutManager = layoutManager

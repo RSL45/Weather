@@ -1,4 +1,4 @@
-package com.weather.android.logic
+package com.weather.android.util
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

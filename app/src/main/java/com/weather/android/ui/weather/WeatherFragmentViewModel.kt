@@ -35,10 +35,14 @@ class WeatherFragmentViewModel : ViewModel() {
     }
 
     fun updateChoosePlace(name : String,skycon:String,description : String,temperature : Int,max : Int,min : Int){
-        ChoosePlaceRepository.updateChoosePlace(name,skycon,description,temperature,max,min)
+        viewModelScope.launch {
+            ChoosePlaceRepository.updateChoosePlace(name,skycon,description,temperature,max,min)
+        }
     }
 
     fun updateLocatePlace(name : String,lng:String,lat:String,skycon:String,description : String,temperature : Int,max : Int,min : Int){
-        ChoosePlaceRepository.updateLocatePlace(name,lng,lat,skycon,description,temperature,max,min)
+        viewModelScope.launch {
+            ChoosePlaceRepository.updateLocatePlace(name,lng,lat,skycon,description,temperature,max,min)
+        }
     }
 }

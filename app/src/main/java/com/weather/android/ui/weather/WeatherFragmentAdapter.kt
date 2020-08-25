@@ -1,10 +1,8 @@
 package com.weather.android.ui.weather
 
-import android.util.SparseArray
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.weather.android.logic.model.ChoosePlaceData
 import com.weather.android.logic.model.ChoosePlaceResponse
 
 

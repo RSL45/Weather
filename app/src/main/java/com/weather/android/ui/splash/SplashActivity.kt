@@ -57,9 +57,6 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        SatusBarUtil.setImmersion(window)
-        SatusBarUtil.setStatusTextColor(false,window, Color.TRANSPARENT)
-
         helper  = MapLocationHelper(this)
 
         if (!GPSOpen()){
@@ -106,10 +103,7 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
     }
 
     /**
-     * 检测是否说有的权限都已经授权
-     * @param grantResults
-     * @return
-     * @since 2.5.0
+     * 检测权限是否已经授权
      */
     private fun verifyPermissions(grantResults: IntArray): Boolean {
         for (result in grantResults) {

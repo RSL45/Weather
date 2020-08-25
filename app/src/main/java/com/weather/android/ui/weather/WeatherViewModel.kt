@@ -25,38 +25,4 @@ class WeatherViewModel : ViewModel() {
         }
     }
 
-    /*fun refreshWeather(lng:String,lat:String){
-        locationLiveData.value = Location(lng,lat)
-    }*/
-
-    private val locationLiveData = MutableLiveData<Location>()
-
-    val weatherLivedata = Transformations.switchMap(locationLiveData){location ->
-        ApiRepository.refreshCityWeather(location.lng,location.lat)
-    }
-
-    fun loadWeather(lng:String,lat:String){
-        locationLiveData.value = Location(lng,lat)
-    }
-
-
-    fun loadAllChoosePlaceWeather(list: MutableList<ChoosePlaceData>){
-        for (i in list){
-            locationLiveData.value = Location(i.lng,i.lat)
-        }
-    }
-
-    fun insertChoosePlace(choosePlaceData: ChoosePlaceData){
-        viewModelScope.launch {
-            ChoosePlaceRepository.insertChoosePlace(choosePlaceData)
-        }
-    }
-
-    fun updateChoosePlace(name : String,skycon:String,description : String,temperature : Int,max : Int,min : Int){
-        ChoosePlaceRepository.updateChoosePlace(name,skycon,description,temperature,max,min)
-    }
-
-    fun updateLocatePlace(name : String,lng:String,lat:String,skycon:String,description : String,temperature : Int,max : Int,min : Int){
-        ChoosePlaceRepository.updateLocatePlace(name,lng,lat,skycon,description,temperature,max,min)
-    }
 }

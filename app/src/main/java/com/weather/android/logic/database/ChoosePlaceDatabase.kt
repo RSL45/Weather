@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.weather.android.logic.AnyConverters
+import com.weather.android.util.AnyConverters
 import com.weather.android.logic.dao.ChoosePlaceDao
 import com.weather.android.logic.model.ChoosePlaceData
 

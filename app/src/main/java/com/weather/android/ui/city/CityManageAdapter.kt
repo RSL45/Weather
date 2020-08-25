@@ -8,18 +8,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import cn.we.swipe.helper.WeSwipe
 import cn.we.swipe.helper.WeSwipeHelper
 import cn.we.swipe.helper.WeSwipeProxyAdapter
 import com.weather.android.R
-import com.weather.android.logic.ChoosePlaceRepository
 import com.weather.android.logic.model.ChoosePlaceData
 import com.weather.android.logic.model.getSky
 
-class CityAdapter(private val activity: CityManageActivity) : WeSwipeProxyAdapter<CityAdapter.ViewHolder>() {
+class CityManageAdapter(private val activity: CityManageActivity) : WeSwipeProxyAdapter<CityManageAdapter.ViewHolder>() {
 
     private lateinit var deletedItemListener:DeletedItemListener
     private var choosePlaceList: MutableList<ChoosePlaceData> = ArrayList()

@@ -32,21 +32,14 @@ class WeatherActivity : BaseActivity() {
 
         setContentView(R.layout.activity_weather)
 
-        SatusBarUtil.setImmersion(window)
-        SatusBarUtil.setStatusTextColor(false,window,Color.TRANSPARENT)
-
-
         if (viewModel.locationLng.isEmpty()){
             viewModel.locationLng = intent.getStringExtra("location_lng") ?: ""
-            //viewModel.locationLng = lng
         }
         if (viewModel.locationLat.isEmpty()){
             viewModel.locationLat = intent.getStringExtra("location_lat") ?: ""
-            //viewModel.locationLat = lat
         }
         if (viewModel.placeName.isEmpty()){
             viewModel.placeName = intent.getStringExtra("place_name") ?: ""
-            //viewModel.placeName = place
         }
 
         placeName.text = viewModel.placeName
@@ -56,13 +49,10 @@ class WeatherActivity : BaseActivity() {
         viewModel.choosePlaceLiveData.observe(this, Observer {response ->
             choosePlaceList.clear()
             if (!WeatherApplication.isFirstBootSaved()) {
-                Log.d("WeatherActivityResponse","test")
                 choosePlaceList.add(ChoosePlaceResponse(1,viewModel.placeName,viewModel.locationLng,viewModel.locationLat))
             }else{
                 response.let {
                     for (chooosePlaceData in response){
-                        Log.d("choosePlaceData","${chooosePlaceData.id}+${chooosePlaceData.toString()}")
-
                         if(chooosePlaceData.id.toString() == "1"){
                             choosePlaceList.add(ChoosePlaceResponse(1,viewModel.placeName,viewModel.locationLng,viewModel.locationLat))
                         }else{
@@ -72,7 +62,6 @@ class WeatherActivity : BaseActivity() {
 
                 }
             }
-            Log.d("choosePlaceList",choosePlaceList.size.toString())
             adapter = WeatherFragmentAdapter(choosePlaceList,this)
             viewPage2.adapter = adapter
 
@@ -86,8 +75,6 @@ class WeatherActivity : BaseActivity() {
         viewPage2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
-                Log.e("WeatherFragment", "onPageScrollStateChanged: $state");
-                //magicIndicator.onPageScrollStateChanged(state)
             }
 
             override fun onPageScrolled(
@@ -96,16 +83,11 @@ class WeatherActivity : BaseActivity() {
                 positionOffsetPixels: Int
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                Log.e("WeatherFragment",
-                    "onPageScrolled: $position--->$positionOffset--->$positionOffsetPixels"
-                );
-                //magicIndicator.onPageScrolled(position, positionOffset, positionOffsetPixels)
 
             }
 
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                //magicIndicator.onPageSelected(position)
                 placeName.text = choosePlaceList[position].name
             }
         })

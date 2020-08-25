@@ -5,8 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,11 +19,11 @@ import kotlinx.android.synthetic.main.activity_city_manage.*
 import kotlinx.android.synthetic.main.activity_city_manage.recyclerView
 
 
-class CityManageActivity : BaseActivity(),CityAdapter.DeletedItemListener {
+class CityManageActivity : BaseActivity(),CityManageAdapter.DeletedItemListener {
 
     val viewModel by lazy { ViewModelProvider(this).get(CityManageViewModel::class.java) }
 
-    private lateinit var adapter: CityAdapter
+    private lateinit var manageAdapter: CityManageAdapter
 
     var choosePlaceList:MutableList<ChoosePlaceData> = mutableListOf()
 
@@ -33,10 +31,6 @@ class CityManageActivity : BaseActivity(),CityAdapter.DeletedItemListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_city_manage)
-
-        SatusBarUtil.setImmersion(window)
-
-        SatusBarUtil.setStatusTextColor(true,window,Color.TRANSPARENT)
 
         searchTv.setOnClickListener {
             val intent = Intent(this,SearchPlaceActivity::class.java)
@@ -49,12 +43,12 @@ class CityManageActivity : BaseActivity(),CityAdapter.DeletedItemListener {
 
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-        adapter = CityAdapter(this)
-        adapter.setDeletedItemListener(this)
-        recyclerView.adapter = adapter
+        manageAdapter = CityManageAdapter(this)
+        manageAdapter.setDeletedItemListener(this)
+        recyclerView.adapter = manageAdapter
 
         val attach:WeSwipe = WeSwipe.attach(recyclerView)
-        adapter.setWeSwipe(attach)
+        manageAdapter.setWeSwipe(attach)
 
         viewModel.queryAllChoosePlace()
         viewModel.choosePlaceLiveData.observe(this, Observer {response ->
@@ -65,7 +59,7 @@ class CityManageActivity : BaseActivity(),CityAdapter.DeletedItemListener {
                 Log.d("CityManageActivity",i.id.toString())
             }
             response?.let {
-                adapter.setList(response,true)
+                manageAdapter.setList(response,true)
             }
         })
 
@@ -93,7 +87,7 @@ class CityManageActivity : BaseActivity(),CityAdapter.DeletedItemListener {
                 positiveButton(R.string.delete) {
                     viewModel.deleteChoosePlaceByName(choosePlaceList[position])
                     choosePlaceList.remove(choosePlaceList[position])
-                    adapter.removeDataByPosition(position)
+                    manageAdapter.removeDataByPosition(position)
                 }
             }
         }
