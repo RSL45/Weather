@@ -19,7 +19,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.afollestad.materialdialogs.MaterialDialog
 import com.amap.api.location.AMapLocation
 import com.example.activitytest.BaseActivity
 import com.weather.android.R
@@ -61,18 +60,18 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
         helper  = MapLocationHelper(this)
 
         if (!GPSOpen()){
-            MaterialDialog(this).show {
-                title(R.string.title)
-                message(R.string.checkGps)
-                cancelable(false)
-                cornerRadius(8.0f)
-                negativeButton(R.string.refuse) {
-                    finish()
-                }
-                positiveButton(R.string.admit) {
-                    getLocation()
-                }
-            }
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("注意")
+            builder.setMessage("gps")
+
+            // 拒绝, 退出应用
+            builder.setNegativeButton("拒绝",
+                DialogInterface.OnClickListener { dialog, which -> finish() })
+            builder.setPositiveButton("同意",
+                DialogInterface.OnClickListener { dialog, which -> getLocation()
+                })
+            builder.setCancelable(false)
+            builder.show()
         }
     }
 
@@ -81,12 +80,17 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
         if (null != needRequestPermissonList && needRequestPermissonList.size > 0) {
             ActivityCompat.requestPermissions(this, needRequestPermissonList.toTypedArray(), PERMISSON_REQUESTCODE)
         }else{
+            Log.d("SplashActivityTest","checkPermission")
             helper.startMapLocation()
         }
     }
 
     /**
      * 获取权限集中需要申请权限的列表
+     *
+     * @param permissions
+     * @return
+     * @since 2.5.0
      */
     private fun findDeniedPermissions(permissions: Array<String>): List<String>? {
         val needRequestPermissonList: MutableList<String> = ArrayList()
@@ -120,10 +124,25 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
                 isNeedCheck = false
             }
         }
+        /*when(requestCode){
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if (!GPSOpen()){
+                        getLocation()
+                    }else{
+                        val i = Intent(this,MainActivity::class.java)
+                        startActivity(i)
+                    }
+                }else{
+                    Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }*/
     }
 
     fun getLocation() {
         if (Build.VERSION.SDK_INT >= 26) {
+
             val i = Intent()
             i.action = Settings.ACTION_LOCATION_SOURCE_SETTINGS
             startActivityForResult(i,REQUEST_CODE_LOCATION_SETTINGS)
@@ -142,15 +161,15 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
     }
 
     private fun showMissingPermissionDialog() {
-        MaterialDialog(this).show {
-            title(R.string.title)
-            message(R.string.permissions)
-            cancelable(false)
-            cornerRadius(8.0f)
-            negativeButton(R.string.refuse) {
-                finish()
-            }
-            positiveButton(R.string.admit) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("注意")
+        builder.setMessage("test")
+
+        // 拒绝, 退出应用
+        builder.setNegativeButton("拒绝",
+            DialogInterface.OnClickListener { dialog, which -> finish() })
+        builder.setPositiveButton("同意",
+            DialogInterface.OnClickListener { dialog, which ->
                 when(isCheckNum){
                     1 -> checkPermissions(*needPermissions)
                     else -> {
@@ -158,8 +177,9 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
                         isNeedCheck = true
                     }
                 }
-            }
-        }
+            })
+        builder.setCancelable(false)
+        builder.show()
     }
 
     private fun startAppSettings() {
@@ -192,18 +212,6 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
                 if (GPSOpen()){
                     checkPermissions(*needPermissions)
                 }else{
-                    MaterialDialog(this).show {
-                        title(R.string.title)
-                        message(R.string.checkGps)
-                        cancelable(false)
-                        cornerRadius(8.0f)
-                        negativeButton(R.string.refuse){
-                            finish()
-                        }
-                        positiveButton(R.string.delete) {
-                            getLocation()
-                        }
-                    }
                     val builder = AlertDialog.Builder(this)
                     builder.setTitle("注意")
                     builder.setMessage("gps")
@@ -221,8 +229,15 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
     }
 
     override fun onCallLocation(aMapLocation: AMapLocation?) {
+        val stringBuilder = StringBuilder()
         if (aMapLocation != null) {
-
+            stringBuilder.append(aMapLocation.longitude)
+            stringBuilder.append(",")
+            stringBuilder.append(aMapLocation.latitude)
+            stringBuilder.append(",")
+            stringBuilder.append(aMapLocation.city)
+            stringBuilder.append(aMapLocation.district)
+            stringBuilder.append(aMapLocation.street)
             lng = aMapLocation.longitude.toString()
             lat = aMapLocation.latitude.toString()
             place = aMapLocation.district+aMapLocation.street
@@ -240,6 +255,7 @@ class SplashActivity : BaseActivity(),MapLocationHelper.LocationCallBack {
 
             }
         }
+        Log.d("SplashActivityLocation",stringBuilder.toString())
     }
 
     override fun onDestroy() {

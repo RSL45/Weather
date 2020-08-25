@@ -7,8 +7,4 @@
     <string name="delete_city">是否删除当前城市？</string>
     <string name="cancel">取消</string>
     <string name="delete">删除</string>
-    <string name="checkGps">位置服务未开启，将无法定位，请同意开启位置服务</string>
-    <string name="permissions">请授权相应的权限，则无法使用该应用</string>
-    <string name="refuse">拒绝</string>
-    <string name="admit">同意</string>
 </resources>
